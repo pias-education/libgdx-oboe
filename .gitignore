@@ -1,3 +1,7 @@
+## Build outputs
+*.aar
+/library/libs
+
 ## Java
 
 *.class

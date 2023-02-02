@@ -180,7 +180,7 @@ echo "========== FFmpeg cross-compilation =========="
 echo "Compiling list: $ABI_FILTERS."
 for ABI in $ABI_FILTERS; do
     echo "~~~~~~~~~ Compiling $ABI ~~~~~~~~~"
-    CFLAGS="-O3"
+    CFLAGS="-O3 -Wl,--hash-style=both"
     LDFLAGS="-lm"
     ABI_FLAGS=""
     case $ABI in
