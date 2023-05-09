@@ -22,9 +22,9 @@ BUILD_ROOT="$(pwd)/build/libs"
 #ABI_FILTERS="x86_64"
 ABI_FILTERS="x86 x86_64 armeabi-v7a arm64-v8a"
 # android.defaultConfig.minSdkVersion
-MIN_SDK_VERSION="16"
+MIN_SDK_VERSION="21"
 
-TOOLCHAIN_VERSION="33"
+TOOLCHAIN_VERSION="21"
 
 # Flags
 FFMPEG_FLAGS="
@@ -189,8 +189,7 @@ echo "========== FFmpeg cross-compilation =========="
 echo "Compiling list: $ABI_FILTERS."
 for ABI in $ABI_FILTERS; do
     echo "~~~~~~~~~ Compiling $ABI ~~~~~~~~~"
-    # https://github.com/barsoosayque/libgdx-oboe/issues/17
-    CFLAGS="-O3 -Wl,--hash-style=both"
+    CFLAGS="-O3"
     LDFLAGS="-lm"
     ABI_FLAGS=""
     case $ABI in
@@ -273,8 +272,6 @@ for ABI in $ABI_FILTERS; do
         --disable-examples
         --disable-encoder
         --prefix=$BUILD_ROOT/$ABI
-        CFLAGS='$CFLAGS -I$BUILD_ROOT/$ABI/include'
-        LDFLAGS='-L$BUILD_ROOT/$ABI/lib'
         "
         
         echo "[1/4] Build $ABI libmp3lame..."
