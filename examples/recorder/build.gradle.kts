@@ -3,6 +3,8 @@ plugins {
 }
 
 android {
+    namespace = "barsoosayque.libgdxoboe.recorder"
+
     defaultConfig {
         applicationId = "barsoosayque.libgdxoboe.recorder"
     }

@@ -3,6 +3,8 @@ plugins {
 }
 
 android {
+    namespace = "barsoosayque.libgdxoboe.music"
+
     defaultConfig {
         applicationId = "barsoosayque.libgdxoboe.music"
     }

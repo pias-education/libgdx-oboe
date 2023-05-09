@@ -3,6 +3,8 @@ plugins {
 }
 
 android {
+    namespace = "barsoosayque.libgdxoboe.async"
+
     defaultConfig {
         applicationId = "barsoosayque.libgdxoboe.async"
     }

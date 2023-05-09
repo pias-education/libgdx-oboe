@@ -3,6 +3,8 @@ plugins {
 }
 
 android {
+    namespace = "barsoosayque.libgdxoboe.waves"
+
     defaultConfig {
         applicationId = "barsoosayque.libgdxoboe.waves"
     }
