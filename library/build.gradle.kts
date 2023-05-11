@@ -4,6 +4,7 @@ plugins {
     id("kotlin-android")
     id("maven-publish")
     id("com.android.library")
+    id("signing")
 }
 
 dependencies {
@@ -86,6 +87,7 @@ publishing {
                 }
                 scm {
                     connection.set("scm:git:${AppConfig.GIT_URL}")
+                    developerConnection.set("scm:git:${AppConfig.GIT_URL}")
                     url.set(AppConfig.GIT_URL)
                 }
             }
@@ -95,6 +97,25 @@ publishing {
             }
         }
     }
+
+    repositories {
+        mavenCentral {
+            /* This does not work yet */
+            credentials {
+                username = findProperty("publishing.username").toString()
+                password = findProperty("publishing.password").toString()
+            }
+        }
+        maven {
+            name = "releases"
+            url = rootProject.mkdir("releases").toURI()
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign(publishing.publications["release"])
 }
 
 val avConfig: File = project.file("dependencies/ffmpeg/libavutil/avconfig.h")

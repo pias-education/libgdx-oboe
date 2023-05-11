@@ -28,6 +28,7 @@ build/*
 gradle-app.setting
 .externalNativeBuild
 examples/**/libs
+/releases
 
 ## OS Specific
 .DS_Store
