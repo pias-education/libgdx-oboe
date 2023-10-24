@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 
 # =============== Build definitions ===============
 
@@ -22,9 +22,10 @@ BUILD_ROOT="$(pwd)/build/libs"
 #ABI_FILTERS="x86_64"
 ABI_FILTERS="x86 x86_64 armeabi-v7a arm64-v8a"
 # android.defaultConfig.minSdkVersion
-MIN_SDK_VERSION="21"
+MIN_SDK_VERSION="19"
 
-TOOLCHAIN_VERSION="21"
+TOOLCHAIN_VERSION="19"
+TOOLCHAIN_VERSION_64BIT="21"
 
 # Flags
 FFMPEG_FLAGS="
@@ -138,6 +139,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --toolchain-version)
             TOOLCHAIN_VERSION="$2"
+            TOOLCHAIN_VERSION_64BIT="$2"
             shift
             ;;
         --abi)
@@ -224,7 +226,7 @@ for ABI in $ABI_FILTERS; do
             CC="armv7a-linux-androideabi$TOOLCHAIN_VERSION-clang"
             ;;
         *64)
-            CC="$TOOLCHAIN_PREFIX$TOOLCHAIN_VERSION-clang"
+            CC="$TOOLCHAIN_PREFIX$TOOLCHAIN_VERSION_64BIT-clang"
             ;;
         *)
             CC="$TOOLCHAIN_PREFIX$TOOLCHAIN_VERSION-clang"
