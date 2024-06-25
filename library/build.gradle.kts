@@ -40,7 +40,7 @@ android {
 
             externalNativeBuild {
                 cmake {
-                    cppFlags("-std=c++17", "-O3", "-DCMAKE_BUILD_TYPE=Release", "-DNDEBUG")
+                    cppFlags("-std=c++17", "-O2", "-g", "-DCMAKE_BUILD_TYPE=RelWithDebInfo", "-DNDEBUG")
                 }
             }
 

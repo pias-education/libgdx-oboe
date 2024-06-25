@@ -2,7 +2,7 @@
 
 # =============== Build definitions ===============
 
-CORES=12
+CORES=16
 MAKE="make -j$CORES"
 
 HOST_NAME=$(uname -s | tr '[:upper:]' '[:lower:]')
@@ -34,9 +34,9 @@ FFMPEG_FLAGS="
 --pkg-config-flags=--static
 --pkg-config=pkg-config
 --disable-postproc
---disable-debug
+--enable-debug
+--disable-stripping
 --enable-version3
---enable-nonfree
 
 --enable-shared
 --disable-static
