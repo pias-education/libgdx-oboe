@@ -40,11 +40,13 @@ class OboeAudio(private val assetManager: AssetManager) : AndroidAudio {
         // well handled in audio_player.cpp
     }
 
+    @Synchronized
     override fun dispose() {
         disposeEngine()
         disposables.onEach { it.dispose() }.clear()
     }
 
+    @Synchronized
     override fun newMusic(file: FileHandle): Music? = when (file.type()) {
         Files.FileType.Internal -> createMusicFromAsset(assetManager, file.path())
         Files.FileType.Absolute -> createMusicFromPath(file.path())
@@ -56,6 +58,7 @@ class OboeAudio(private val assetManager: AssetManager) : AndroidAudio {
         ?.let(::OboeMusic)
         ?.also(disposables::add)
 
+    @Synchronized
     override fun newSound(file: FileHandle): Sound? = when (file.type()) {
         Files.FileType.Internal -> createSoundpoolFromAsset(assetManager, file.path())
         Files.FileType.Absolute -> createSoundpoolFromPath(file.path())
@@ -67,11 +70,13 @@ class OboeAudio(private val assetManager: AssetManager) : AndroidAudio {
         ?.let(::OboeSound)
         ?.also(disposables::add)
 
+    @Synchronized
     override fun newAudioDevice(samplingRate: Int, isMono: Boolean): AudioDevice =
         createAudioStream(samplingRate, isMono).let(::NativeAudioStream)
             .let(::OboeAudioDevice)
             .also(disposables::add)
 
+    @Synchronized
     override fun newAudioRecorder(samplingRate: Int, isMono: Boolean): AudioRecorder =
         createAudioRecorder(samplingRate, isMono).let(::NativeAudioRecorder)
             .let(::OboeAudioRecorder)

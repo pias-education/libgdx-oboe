@@ -124,11 +124,13 @@ OBOEAUDIO_METHOD(void, disposeEngine)(JNIEnv *env, jobject self) {
 }
 
 OBOEAUDIO_METHOD(void, resume)(JNIEnv *env, jobject self) {
+    SynchronizedMethodGuard guard(env, self);
     auto* player = get_or_create_shared_player(env, self);
     player->resume();
 }
 
 OBOEAUDIO_METHOD(void, pause)(JNIEnv *env, jobject self) {
+    SynchronizedMethodGuard guard(env, self);
     auto* player = get_or_create_shared_player(env, self);
     player->stop();
 }
