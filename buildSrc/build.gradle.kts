@@ -13,7 +13,7 @@ repositories {
 }
 
 object PluginsVersions {
-    const val ANDROID = "8.0.1"
+    const val ANDROID = "8.4.0"
     const val KOTLIN = "1.7.20"
 }
 
