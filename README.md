@@ -1,27 +1,28 @@
-<table align="center"><tr><td align="center" width="9999">
-<img src="/icon.png" align="center" width="150" alt="Icon">
-
 # libGDX Oboe
 
 [![libGDX](https://img.shields.io/badge/libGDX-1.13.1-yellow.svg)](https://github.com/libgdx/libgdx/releases/tag/1.13.1)
 [![oboe](https://img.shields.io/badge/oboe-1.9.3-yellow.svg)](https://github.com/google/oboe/releases/tag/1.9.3)
 
-Reimplementation of the Audio interface for **libGDX** framework using Oboe and FFmpeg, which allows music to flow without any delay or another unpleasant distortion.
+<table><tr>
+<td><img src="/icon.png" align="center" width="250" alt="Icon"></td>
+<td>
+    
+Reimplementation of the Audio interface for **libGDX** framework using [Oboe][oboe] and [FFmpeg][ffmpeg], which allows music to flow without any delay or another unpleasant distortion.
 
 And if you ever asked yourself *"Why is my libGDX app music is so broken ?"*, then you've come to the right place.
 
-</td></tr></table>
+</td>
+</tr></table>
 
-<div align="center">
+## Docs
 
-[🔰 How to Use][usage] ・ [🎺 Explore Examples][examples] ・ [🚜 How to Build][build]
+- 🔰 [How to Use][usage]
+- 🏗️ [How to Build][build]
+- 🎺 [Explore Examples][examples]
 
-*Content of `docs` directory.*
-</div>
+## Quick example
 
-## Quick, show me some code !
-
-Here is how do one essentially "use" this library (code in Kotlin):
+To use the library, you'll have to add it as a dependency and override the default audio engine on android:
 
 ```kotlin
 class AndroidLauncher : AndroidApplication() {
@@ -39,14 +40,14 @@ class AndroidLauncher : AndroidApplication() {
 }
 ```
 
-## How does this works ?
+## How does the library work
 
-Using [Oboe library][oboe] from Google, you can create high-performance audio streams which may plug in and tweak some features in runtime to boost speed even further.
-This streams are native, so there is no GC that will slow things down.
-For audio decoding, this library also provide native tools: libavformat and friends (FFmpeg) with MP3, OGG and WAV support only.
-Such audio decoder is blazing fast, so combining that with oboe streams, we get ourselves responsive and fast Audio implementation.
+Using [Oboe library][oboe] from Google you can create high-performance audio streams that may tweak some features in runtime to boost performance even further.
+These streams are native, so there is no GC that will slow things down.
+For audio decoding this library provide native tools: *libavformat* with MP3, OGG and WAV support only (but you can [build it yourself][build] to support more audio formats).
+Such audio decoder is blazing fast and precise so combining that with oboe streams, we get responsive and fast `Audio` implementation.
 
-## State of features
+## Features
 
 Here is a table of known goodies and problems for certain features per file format (decoder):
 
@@ -58,8 +59,12 @@ Here is a table of known goodies and problems for certain features per file form
 |Audio Device|👌|Repetitive writes to audio device might produce audio artifacts (cracks).|
 |Audio Recorder|👌|Repetitive reads bleed a little bit of cache from the last read to the buffer. Omit a few first frames when using recorded PCM.|
 
+*⭐ Works well* \
+*👌 It's alright in general but may have corner cases*
+
 [oboe]: https://github.com/google/oboe
 [libgdx]: https://github.com/libgdx/libgdx
+[ffmpeg]: https://ffmpeg.org
 [usage]: /docs/Usage.md
 [examples]: /docs/Examples.md
 [build]: /docs/Build.md
