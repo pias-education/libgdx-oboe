@@ -12,7 +12,7 @@
 	url = https://github.com/erikd/libsamplerate.git
 [submodule "library/dependencies/result"]
 	path = library/dependencies/result
-	url = git@github.com:oktal/result.git
+	url = https://github.com/oktal/result.git
 [submodule "library/dependencies/ffmpeg"]
 	path = library/dependencies/ffmpeg
-	url = git://source.ffmpeg.org/ffmpeg.git
+	url = https://git.ffmpeg.org/ffmpeg.git

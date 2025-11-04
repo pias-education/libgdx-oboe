@@ -55,14 +55,30 @@ add_library(libgdx-oboe SHARED
 
 target_link_libraries(libgdx-oboe samplerate android log oboe fmt OpenSLES ${FFMPEG_LIBS})
 target_compile_options(libgdx-oboe PRIVATE -Wall)
+target_link_options(libgdx-oboe PRIVATE "-Wl,-z,max-page-size=16384")
 
 # Strip
-get_filename_component(ANDROID_TOOLCHAIN_DIR ${CMAKE_CXX_ANDROID_TOOLCHAIN_PREFIX} DIRECTORY)
-add_custom_command(TARGET libgdx-oboe POST_BUILD
-        COMMAND "${ANDROID_TOOLCHAIN_DIR}/llvm-strip" -g -S -d --strip-debug
-        "$<TARGET_FILE:libgdx-oboe>")
-foreach(LIB ${FFMPEG_LIBS})
+#get_filename_component(ANDROID_TOOLCHAIN_DIR ${CMAKE_CXX_ANDROID_TOOLCHAIN_PREFIX} DIRECTORY)
+#add_custom_command(TARGET libgdx-oboe POST_BUILD
+#        COMMAND "${ANDROID_TOOLCHAIN_DIR}/llvm-strip" -g -S -d --strip-debug
+#        "$<TARGET_FILE:libgdx-oboe>")
+#foreach(LIB ${FFMPEG_LIBS})
+#    add_custom_command(TARGET libgdx-oboe POST_BUILD
+#            COMMAND "${ANDROID_TOOLCHAIN_DIR}/llvm-strip" -g -S -d --strip-debug
+ #           "${CMAKE_CURRENT_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/lib${LIB}.so")
+#endforeach()
+
+# Strip symbols from our target using the toolchain's strip
+if(CMAKE_STRIP)
     add_custom_command(TARGET libgdx-oboe POST_BUILD
-            COMMAND "${ANDROID_TOOLCHAIN_DIR}/llvm-strip" -g -S -d --strip-debug
-            "${CMAKE_CURRENT_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/lib${LIB}.so")
-endforeach()
+            COMMAND "${CMAKE_STRIP}" -g -S -d --strip-debug "$<TARGET_FILE:libgdx-oboe>")
+endif()
+
+# (Optional) If you really want to strip the prebuilt FFmpeg .so files you package:
+if(CMAKE_STRIP)
+    foreach(LIB ${FFMPEG_LIBS})
+        add_custom_command(TARGET libgdx-oboe POST_BUILD
+                COMMAND "${CMAKE_STRIP}" -g -S -d --strip-debug
+                "${CMAKE_CURRENT_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/lib${LIB}.so")
+    endforeach()
+endif()

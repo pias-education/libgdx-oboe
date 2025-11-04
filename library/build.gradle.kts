@@ -37,14 +37,13 @@ android {
 
         ndk {
             abiFilters.addAll(listOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a"))
-
-            externalNativeBuild {
-                cmake {
-                    cppFlags("-std=c++17", "-O3", "-DCMAKE_BUILD_TYPE=Release", "-DNDEBUG")
-                }
-            }
-
             consumerProguardFile("proguard-rules.pro")
+        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags("-std=c++17", "-O3", "-DCMAKE_BUILD_TYPE=Release", "-DNDEBUG")
+            }
         }
     }
 
@@ -113,9 +112,18 @@ publishing {
     }
 }
 
+val publishingToLocal = gradle.startParameter.taskNames.any {
+    it.contains("publishToMavenLocal", ignoreCase = true)
+}
+
 signing {
-    useGpgCmd()
-    sign(publishing.publications["release"])
+    //useGpgCmd()
+    //sign(publishing.publications["release"])
+    isRequired = !publishingToLocal
+    if (!publishingToLocal) {
+        useGpgCmd()
+        sign(publishing.publications["release"])
+    }
 }
 
 val avConfig: File = project.file("dependencies/ffmpeg/libavutil/avconfig.h")
