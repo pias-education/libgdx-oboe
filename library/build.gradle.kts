@@ -19,6 +19,15 @@ android {
     compileSdkVersion = "android-${AndroidConfig.SDK}"
     ndkVersion = AndroidConfig.NDK
 
+    buildTypes {
+        release {
+            ndk {
+                // 'SYMBOL_TABLE' is small and sufficient for Play crash decoding
+                debugSymbolLevel = "SYMBOL_TABLE"  // or "FULL"
+            }
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
