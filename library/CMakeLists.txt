@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.7.1)
+project(gdx-oboe)
 
 # Enable LTO optimization
 # https://github.com/android/ndk/issues/721
@@ -71,7 +72,8 @@ target_link_options(gdx-oboe PRIVATE "-Wl,-z,max-page-size=16384")
 # Strip symbols from our target using the toolchain's strip
 if(CMAKE_STRIP)
     add_custom_command(TARGET gdx-oboe POST_BUILD
-            COMMAND "${CMAKE_STRIP}" -g -S -d --strip-debug "$<TARGET_FILE:libgdx-oboe>")
+            COMMAND "${CMAKE_STRIP}" -g -S -d --strip-debug "$<TARGET_FILE:gdx-oboe>")
+
 endif()
 
 # (Optional) If you really want to strip the prebuilt FFmpeg .so files you package:
