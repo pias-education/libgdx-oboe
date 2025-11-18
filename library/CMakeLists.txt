@@ -37,7 +37,7 @@ foreach(LIB ${FFMPEG_LIBS})
 endforeach()
 
 set(SRC_DIR src/cpp)
-add_library(libgdx-oboe SHARED
+add_library(gdx-oboe SHARED
             ${SRC_DIR}/samplerate/resampler.cpp
             ${SRC_DIR}/mediacodec/audio_decoder.cpp
             ${SRC_DIR}/mediacodec/internal_asset.cpp
@@ -53,9 +53,9 @@ add_library(libgdx-oboe SHARED
             ${SRC_DIR}/native/oboe_audio_device.cpp
             ${SRC_DIR}/native/oboe_audio_recorder.cpp)
 
-target_link_libraries(libgdx-oboe samplerate android log oboe fmt OpenSLES ${FFMPEG_LIBS})
-target_compile_options(libgdx-oboe PRIVATE -Wall)
-target_link_options(libgdx-oboe PRIVATE "-Wl,-z,max-page-size=16384")
+target_link_libraries(gdx-oboe samplerate android log oboe fmt OpenSLES ${FFMPEG_LIBS})
+target_compile_options(gdx-oboe PRIVATE -Wall)
+target_link_options(gdx-oboe PRIVATE "-Wl,-z,max-page-size=16384")
 
 # Strip
 #get_filename_component(ANDROID_TOOLCHAIN_DIR ${CMAKE_CXX_ANDROID_TOOLCHAIN_PREFIX} DIRECTORY)
@@ -70,14 +70,14 @@ target_link_options(libgdx-oboe PRIVATE "-Wl,-z,max-page-size=16384")
 
 # Strip symbols from our target using the toolchain's strip
 if(CMAKE_STRIP)
-    add_custom_command(TARGET libgdx-oboe POST_BUILD
-            COMMAND "${CMAKE_STRIP}" -g -S -d --strip-debug "$<TARGET_FILE:libgdx-oboe>")
+    add_custom_command(TARGET gdx-oboe POST_BUILD
+            COMMAND "${CMAKE_STRIP}" -g -S -d --strip-debug "$<TARGET_FILE:gdx-oboe>")
 endif()
 
 # (Optional) If you really want to strip the prebuilt FFmpeg .so files you package:
 if(CMAKE_STRIP)
     foreach(LIB ${FFMPEG_LIBS})
-        add_custom_command(TARGET libgdx-oboe POST_BUILD
+        add_custom_command(TARGET gdx-oboe POST_BUILD
                 COMMAND "${CMAKE_STRIP}" -g -S -d --strip-debug
                 "${CMAKE_CURRENT_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/lib${LIB}.so")
     endforeach()
