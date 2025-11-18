@@ -21,7 +21,7 @@ class OboeAudio(private val assetManager: AssetManager) : AndroidAudio {
     private val disposables: MutableList<Disposable> = mutableListOf()
 
     init {
-        System.loadLibrary("libgdx-oboe")
+        System.loadLibrary("gdx-oboe")
     }
 
     private external fun createSoundpoolFromAsset(assetManager: AssetManager, path: String): Long
