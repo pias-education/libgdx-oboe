@@ -27,6 +27,8 @@ include_directories (${RESULT_DIR})
 set(BUILD_TESTING OFF)
 set(LIBSAMPLERATE_EXAMPLES OFF)
 set(SAMPLERATE dependencies/libsamplerate)
+set(LIBSAMPLERATE_TESTS OFF CACHE BOOL "" FORCE)
+set(LIBSAMPLERATE_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory (${SAMPLERATE} ./samplerate)
 include_directories (${SAMPLERATE}/include)
 
