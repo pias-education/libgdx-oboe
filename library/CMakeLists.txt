@@ -1,5 +1,6 @@
 project(libgdx-oboe)
 cmake_minimum_required(VERSION 3.7.1)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Enable LTO optimization
 # https://github.com/android/ndk/issues/721
@@ -56,7 +57,10 @@ add_library(gdx-oboe SHARED
 
 target_link_libraries(gdx-oboe samplerate android log oboe fmt OpenSLES ${FFMPEG_LIBS})
 target_compile_options(gdx-oboe PRIVATE -Wall)
-target_link_options(gdx-oboe PRIVATE "-Wl,-z,max-page-size=16384")
+target_link_options(gdx-oboe PRIVATE
+        "-Wl,-z,max-page-size=16384"
+        "-Wl,--gc-sections"
+)
 
 # Strip
 #get_filename_component(ANDROID_TOOLCHAIN_DIR ${CMAKE_CXX_ANDROID_TOOLCHAIN_PREFIX} DIRECTORY)
