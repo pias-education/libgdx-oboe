@@ -7,5 +7,6 @@ android {
 
     defaultConfig {
         applicationId = "barsoosayque.libgdxoboe.music"
+        namespace = "barsoosayque.libgdxoboe.music"
     }
 }

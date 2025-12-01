@@ -1,5 +1,5 @@
---- a/configure	2024-06-25 17:14:43
-+++ b/configure	2024-06-25 17:26:56
+--- a/configure
++++ b/configure
 @@ -17526,16 +17526,10 @@
  					OPTIMIZATION="${OPTIMIZATION} -march=i486"
  					;;

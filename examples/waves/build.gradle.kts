@@ -7,5 +7,6 @@ android {
 
     defaultConfig {
         applicationId = "barsoosayque.libgdxoboe.waves"
+        namespace = "barsoosayque.libgdxoboe.waves"
     }
 }

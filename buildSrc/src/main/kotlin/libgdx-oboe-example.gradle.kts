@@ -9,6 +9,7 @@ val libDir = "../common/libs"
 dependencies {
     implementation(project(":library"))
     implementation(Dependencies.GDX_BACKEND_ANDROID)
+    implementation(Dependencies.GDX)
     implementation(Dependencies.KOTLIN_STDLIB)
     implementation(Dependencies.KTX_SCENE2D)
     implementation(Dependencies.KTX_ACTORS)
@@ -23,8 +24,8 @@ android {
     compileSdkVersion = "android-${AndroidConfig.SDK}"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     sourceSets {

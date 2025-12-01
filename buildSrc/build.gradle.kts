@@ -8,13 +8,12 @@ repositories {
     mavenLocal()
     mavenCentral()
     google()
-    maven { url = uri("https://kotlin.bintray.com/kotlinx") }
     maven { url = uri("https://oss.sonatype.org/content/repositories/releases/") }
 }
 
 object PluginsVersions {
-    const val ANDROID = "8.0.1"
-    const val KOTLIN = "1.7.20"
+    const val ANDROID = "8.11.1"
+    const val KOTLIN = "2.2.0"
 }
 
 dependencies {

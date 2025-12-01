@@ -12,20 +12,18 @@ HOST_TAG="$HOST_NAME-$HOST_ARCH"
 # Directories
 LIBMP3LAME_ROOT="build/libmp3lame"
 LIBOGG_ROOT="build/libogg"
-LIBWAVPACK_ROOT="build/libwavpack"
 LIBVORBIS_ROOT="build/libvorbis"
 FFMPEG_ROOT="dependencies/ffmpeg"
 BUILD_ROOT="$(pwd)/build/libs"
 
 # Consult library/build.gradle for those options
 # android.defaultConfig.ndk.abiFilters
-#ABI_FILTERS="x86_64"
+# ABI_FILTERS="x86_64"
 ABI_FILTERS="x86 x86_64 armeabi-v7a arm64-v8a"
 # android.defaultConfig.minSdkVersion
-MIN_SDK_VERSION="19"
+MIN_SDK_VERSION="21"
 
-TOOLCHAIN_VERSION="19"
-TOOLCHAIN_VERSION_64BIT="21"
+TOOLCHAIN_VERSION="35"
 
 # Flags
 FFMPEG_FLAGS="
@@ -103,7 +101,7 @@ while [[ $# -gt 0 ]]; do
             echo "    --ndk-dir <NDK_DIR>:           uses toolchain from provided ndk directory (or env var NDK_DIR otherwise)"
             echo "    --toolchain-version <VERSION>: uses this exact numeric NDK toolchain version"
             echo "    --abi <ABI>:                   build only selected ABI"
-            echo "    --update:                      copsy built libraries to ./libs (thi option assume that the library is built)."
+            echo "    --update:                      copy built libraries to ./libs (thi option assume that the library is built)."
             echo "    --clear:                       clear build and temporary directories and exit."
             echo "    --ffmpeg-only:                 only build ffmpeg (assuming that dependencies already built)"
             echo "    --init:                        configure ffmpeg and generate required files (this implies --ffmpeg-only)"
@@ -121,7 +119,6 @@ while [[ $# -gt 0 ]]; do
             rm -r "$BUILD_ROOT"
             rm -r "$LIBMP3LAME_ROOT"
             rm -r "$LIBOGG_ROOT"
-            rm -r "$LIBWAVPACK_ROOT"
             rm -r "$LIBVORBIS_ROOT"
             (cd "$FFMPEG_ROOT" && $MAKE clean)
             exit 0
@@ -139,7 +136,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --toolchain-version)
             TOOLCHAIN_VERSION="$2"
-            TOOLCHAIN_VERSION_64BIT="$2"
             shift
             ;;
         --abi)
@@ -177,13 +173,13 @@ if [ -z "$INIT_ONLY" ]; then
 
   if [ ! -e $LIBOGG_ROOT ]; then
     echo "Downloading LIBOGG:"
-    curl -L "http://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz" | tar xz
+    curl -L "https://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.gz" | tar xz
     mv libogg-1.3.4 "$LIBOGG_ROOT"
   fi
 
   if [ ! -e $LIBVORBIS_ROOT ]; then
     echo "Downloading LIBVORBIS:"
-    curl -L "http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.5.tar.gz" | tar xz
+    curl -L "https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.5.tar.gz" | tar xz
     mv libvorbis-1.3.5 "$LIBVORBIS_ROOT"
     patch $LIBVORBIS_ROOT/configure < dependencies/libvorbis-clang.patch
   fi
@@ -195,8 +191,8 @@ echo "========== FFmpeg cross-compilation =========="
 echo "Compiling list: $ABI_FILTERS."
 for ABI in $ABI_FILTERS; do
     echo "~~~~~~~~~ Compiling $ABI ~~~~~~~~~"
-    CFLAGS="-O3"
-    LDFLAGS="-lm"
+    CFLAGS=""
+    LDFLAGS=""
     ABI_FLAGS=""
     case $ABI in
         x86)
@@ -209,7 +205,7 @@ for ABI in $ABI_FILTERS; do
         x86_64)
             ARCH=x86_64
             TOOLCHAIN_PREFIX="x86_64-linux-android"
-            CPU="x86_64"
+            CPU="x86-64"
             ABI_FLAGS="--disable-x86asm"
             ;;
         armeabi-v7a)
@@ -230,7 +226,7 @@ for ABI in $ABI_FILTERS; do
             CC="armv7a-linux-androideabi$TOOLCHAIN_VERSION-clang"
             ;;
         *64)
-            CC="$TOOLCHAIN_PREFIX$TOOLCHAIN_VERSION_64BIT-clang"
+            CC="$TOOLCHAIN_PREFIX$TOOLCHAIN_VERSION-clang"
             ;;
         *)
             CC="$TOOLCHAIN_PREFIX$TOOLCHAIN_VERSION-clang"
@@ -251,7 +247,11 @@ for ABI in $ABI_FILTERS; do
     export TOOLCHAIN=$TOOLCHAIN
     export TARGET=$TOOLCHAIN_PREFIX
     export API=$MIN_SDK_VERSION
-    
+
+    # https://github.com/barsoosayque/libgdx-oboe/issues/17
+    export CFLAGS="$CFLAGS -I$BUILD_ROOT/$ABI/include -O3"
+    export LDFLAGS="$LDFLAGS -L$BUILD_ROOT/$ABI/lib -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384 -Wl,--hash-style=both -lm"
+
     if [ -z "$FFMPEG_ONLY" ]; then
         echo "Cross-compile autoconf env:"
         echo "AR=$AR"
@@ -279,7 +279,7 @@ for ABI in $ABI_FILTERS; do
         --disable-encoder
         --prefix=$BUILD_ROOT/$ABI
         "
-        
+
         echo "[1/4] Build $ABI libmp3lame..."
         (cd $LIBMP3LAME_ROOT && ./configure $AUTOCONF_CROSS_FLAGS && $MAKE clean && $MAKE install)
 
@@ -317,8 +317,6 @@ for ABI in $ABI_FILTERS; do
     echo "ABI flags:$ABI_FLAGS"
     echo "FFMPEG flags:$FFMPEG_FLAGS"
 
-    CFLAGS="$CFLAGS -I$BUILD_ROOT/$ABI/include"
-    LDFLAGS="$LDFLAGS -L$BUILD_ROOT/$ABI/lib"
     (cd "$FFMPEG_ROOT" && \
     ./configure \
         --extra-cflags="$CFLAGS" \
