@@ -1,5 +1,12 @@
-project(libgdx-oboe)
+#project(libgdx-oboe)
 cmake_minimum_required(VERSION 3.7.1)
+#set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# 🔥 Disable libsamplerate tests *before* add_subdirectory
+set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+set(LIBSAMPLERATE_TESTS OFF CACHE BOOL "" FORCE)
+set(LIBSAMPLERATE_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+project(libgdx-oboe)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Enable LTO optimization
