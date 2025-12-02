@@ -11,22 +11,26 @@ plugins {
 // Dependencies
 // ─────────────────────────────────────────────
 dependencies {
-    implementation(Dependencies.GDX)                     // from upstream
+    implementation(Dependencies.GDX)                     // update from upstream
     implementation(Dependencies.GDX_BACKEND_ANDROID)
     implementation(Dependencies.KOTLIN_STDLIB)
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 // ─────────────────────────────────────────────
 // Android + Build Config
 // ─────────────────────────────────────────────
 android {
-    namespace = "com.pias_education.libgdxoboe"          // keep YOUR identity!
+    namespace = "com.pias_education.libgdxoboe"          // keep our identity!
     buildToolsVersion = AndroidConfig.BUILD_TOOLS
     compileSdkVersion = "android-${AndroidConfig.SDK}"
     ndkVersion = AndroidConfig.NDK
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17      // upstream improvements
+        sourceCompatibility = JavaVersion.VERSION_17      // upstream upgrades/updates
         targetCompatibility = JavaVersion.VERSION_17
     }
 
@@ -55,7 +59,7 @@ android {
         }
     }
 
-    // This external build was duplicated and misplaced — now is correct
+    // This external build is now positioned correctly
     externalNativeBuild {
         cmake { path("CMakeLists.txt") }
     }
