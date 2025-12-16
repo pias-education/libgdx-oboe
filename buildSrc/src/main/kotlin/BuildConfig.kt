@@ -12,7 +12,7 @@ object AppConfig {
     const val DESCRIPTION = "libGDX audio replacement for Android (API 19+) built on top of Oboe."
     const val SITE_URL = "https://github.com/pias-education/libgdx-oboe"
     const val GIT_URL = "git@github.com:pias-education/libgdx-oboe.git"
-    const val VERSION = "0.4.0"
+    const val VERSION = "0.4.1-SNAPSHOT"
     const val DEVELOPER_ID = "pias-education"
     const val DEVELOPER_EMAIL = "admin@pias-education.com"
     const val LICENSE_NAME = "The MIT License"

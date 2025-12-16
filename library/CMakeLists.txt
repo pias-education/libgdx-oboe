@@ -89,10 +89,10 @@ if(CMAKE_STRIP)
 endif()
 
 # (Optional) If you really want to strip the prebuilt FFmpeg .so files you package:
-if(CMAKE_STRIP)
-    foreach(LIB ${FFMPEG_LIBS})
-        add_custom_command(TARGET gdx-oboe POST_BUILD
-                COMMAND "${CMAKE_STRIP}" -g -S -d --strip-debug
-                "${CMAKE_CURRENT_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/lib${LIB}.so")
-    endforeach()
-endif()
+#if(CMAKE_STRIP)
+#    foreach(LIB ${FFMPEG_LIBS})
+ #       add_custom_command(TARGET gdx-oboe POST_BUILD
+#                COMMAND "${CMAKE_STRIP}" -g -S -d --strip-debug
+#                "${CMAKE_CURRENT_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/lib${LIB}.so")
+#    endforeach()
+#endif()
