@@ -46,7 +46,8 @@ android {
         minSdk = AndroidConfig.MIN_SDK
 
         ndk {
-            abiFilters.addAll(listOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a"))
+            //abiFilters.addAll(listOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a"))
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
 
             // moved into correct block
             externalNativeBuild {
