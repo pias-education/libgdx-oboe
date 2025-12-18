@@ -39,12 +39,21 @@ set(LIBSAMPLERATE_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory (${SAMPLERATE} ./samplerate)
 include_directories (${SAMPLERATE}/include)
 
-set(FFMPEG_DIR dependencies/ffmpeg)
-include_directories (${FFMPEG_DIR})
+set(FFMPEG_INCLUDE_DIR "/home/aup/StudioProjects/pias/ffmpeg/include")
+include_directories(${FFMPEG_INCLUDE_DIR})
+
+#include_directories(${FFMPEG_ROOT}/include)
 set(FFMPEG_LIBS avformat avcodec avutil swresample)
+
+set(FFMPEG_LIB_DIR
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/main/jniLibs/${CMAKE_ANDROID_ARCH_ABI}"
+)
+
 foreach(LIB ${FFMPEG_LIBS})
-    add_library( ${LIB} SHARED IMPORTED )
-    set_target_properties( ${LIB} PROPERTIES IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/libs/${CMAKE_ANDROID_ARCH_ABI}/lib${LIB}.so" )
+    add_library(${LIB} SHARED IMPORTED)
+    set_target_properties(${LIB} PROPERTIES
+            IMPORTED_LOCATION "${FFMPEG_LIB_DIR}/lib${LIB}.so"
+    )
 endforeach()
 
 set(SRC_DIR src/cpp)
@@ -64,7 +73,7 @@ add_library(gdx-oboe SHARED
             ${SRC_DIR}/native/oboe_audio_device.cpp
             ${SRC_DIR}/native/oboe_audio_recorder.cpp)
 
-target_link_libraries(gdx-oboe samplerate android log oboe fmt OpenSLES ${FFMPEG_LIBS})
+target_link_libraries(gdx-oboe samplerate android log oboe fmt OpenSLES  ${FFMPEG_LIBS})
 target_compile_options(gdx-oboe PRIVATE -Wall)
 target_link_options(gdx-oboe PRIVATE
         "-Wl,-z,max-page-size=16384"
