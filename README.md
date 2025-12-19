@@ -12,7 +12,27 @@ Reimplementation of the Audio interface for **libGDX** framework using [Oboe][ob
 And if you ever asked yourself *"Why is my libGDX app music is so broken ?"*, then you've come to the right place.
 
 </td>
-</tr></table>
+</tr>
+<tr>
+    <td></td>
+    <td>
+        <b>Caution: no FFmpeg bundle</b><br>
+        This fork of libgdx-oboe does <b>not</b> ship FFmpeg binaries.<br>
+        FFmpeg <b>must be built separately per ABI</b> and placed into the project. Currently used FFmpeg version: 5.1.4
+        <br>
+        Reasons:
+        <ul>
+            <li>ABI stability</li>
+            <li>avoiding prebuilt binary mismatch</li>
+            <li>support for legacy ARMv7 devices</li>
+            <li>avoid ELF/strip issues</li>
+            <li>developer controls codec selection & size</li>
+        </ul>
+        
+    </td>
+</tr>
+
+</table>
 
 ## Docs
 
