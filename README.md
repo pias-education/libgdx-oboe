@@ -14,8 +14,8 @@ And if you ever asked yourself *"Why is my libGDX app music is so broken ?"*, th
 </td>
 </tr>
 <tr>
-    <td></td>
-    <td>
+    <td colspan="2">
+    
         <b>Caution: no FFmpeg bundle</b><br>
         This fork of libgdx-oboe does <b>not</b> ship FFmpeg binaries.<br>
         FFmpeg <b>must be built separately per ABI</b> and placed into the project. Currently used FFmpeg version: 5.1.4
