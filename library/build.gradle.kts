@@ -47,16 +47,18 @@ android {
 
         ndk {
             //abiFilters.addAll(listOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a"))
-            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86_64" ))
 
             // moved into correct block
-            externalNativeBuild {
-                cmake {
-                    cppFlags("-std=c++17", "-O3", "-DCMAKE_BUILD_TYPE=Release", "-DNDEBUG")
-                }
-            }
+
 
             consumerProguardFile("proguard-rules.pro")
+        }
+
+        externalNativeBuild {
+            cmake {
+                cppFlags("-std=c++17", "-O3", "-DCMAKE_BUILD_TYPE=Release", "-DNDEBUG")
+            }
         }
     }
 
