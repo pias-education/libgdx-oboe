@@ -47,7 +47,7 @@ android {
 
         ndk {
             //abiFilters.addAll(listOf("x86", "x86_64", "armeabi-v7a", "arm64-v8a"))
-            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86_64" ))
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a"))
 
             // moved into correct block
 
