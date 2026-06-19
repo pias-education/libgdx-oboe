@@ -39,7 +39,10 @@ set(LIBSAMPLERATE_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory (${SAMPLERATE} ./samplerate)
 include_directories (${SAMPLERATE}/include)
 
-set(FFMPEG_INCLUDE_DIR "/home/aup/StudioProjects/pias/ffmpeg/include")
+# Use the in-tree FFmpeg submodule headers (pinned to n5.1.4, matching the prebuilt
+# .so in src/main/jniLibs). This must stay in lockstep with those libraries to avoid
+# ABI/struct-offset mismatches. Portable across machines (was a hardcoded absolute path).
+set(FFMPEG_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/ffmpeg")
 include_directories(${FFMPEG_INCLUDE_DIR})
 
 #include_directories(${FFMPEG_ROOT}/include)
@@ -61,6 +64,7 @@ add_library(gdx-oboe SHARED
             ${SRC_DIR}/samplerate/resampler.cpp
             ${SRC_DIR}/mediacodec/audio_decoder.cpp
             ${SRC_DIR}/mediacodec/internal_asset.cpp
+            ${SRC_DIR}/mediacodec/file_asset.cpp
             ${SRC_DIR}/mediacodec/decoder_bundle.cpp
             ${SRC_DIR}/audio/oboe_engine.cpp
             ${SRC_DIR}/audio/audio_player.cpp

@@ -123,15 +123,10 @@ swr_result create_swr(const codec_context_ptr &codec_ctx, int stream_index) {
 }
 
 decoder_bundle_result decoder_bundle::create(std::string_view filename) {
-    decoder_bundle bundle;
-
-    bundle.m_format_ctx = TRY(create_context(fmt::format("file:{}", filename), nullptr));
-    int stream_index = 0;
-    std::tie(bundle.m_codec_ctx, stream_index) = TRY(create_codec(bundle.m_format_ctx));
-    std::tie(bundle.m_swr_ctx, bundle.m_oframe, bundle.m_iframe, bundle.m_packet) = TRY(
-            create_swr(bundle.m_codec_ctx, stream_index));
-
-    return ok(std::move(bundle));
+    // FFmpeg's `file:` protocol is unavailable in the bundled libavformat, so route the
+    // path through a custom AVIOContext via file_asset instead of avformat_open_input("file:...").
+    return file_asset::create(filename)
+            .and_then([](file_asset &&asset) { return decoder_bundle::create(asset); });
 }
 
 decoder_bundle_result decoder_bundle::create(internal_asset &asset) {
@@ -142,6 +137,27 @@ decoder_bundle_result decoder_bundle::create(internal_asset &asset) {
     format_ctx->pb = bundle.m_avio_ctx.get();
     format_ctx->flags |= AVFMT_FLAG_CUSTOM_IO | AVFMT_FLAG_NONBLOCK;
     format_ctx->max_analyze_duration = 0;
+    bundle.m_format_ctx = TRY(create_context(asset.path(), format_ctx));
+
+    int stream_index;
+    std::tie(bundle.m_codec_ctx, stream_index) = TRY(create_codec(bundle.m_format_ctx));
+
+    std::tie(bundle.m_swr_ctx, bundle.m_oframe, bundle.m_iframe, bundle.m_packet) = TRY(
+            create_swr(bundle.m_codec_ctx, stream_index));
+
+    return ok(std::move(bundle));
+}
+
+decoder_bundle_result decoder_bundle::create(file_asset &asset) {
+    decoder_bundle bundle;
+
+    AVFormatContext *format_ctx = avformat_alloc_context();
+    bundle.m_avio_ctx = asset.generate_avio();
+    format_ctx->pb = bundle.m_avio_ctx.get();
+    format_ctx->flags |= AVFMT_FLAG_CUSTOM_IO | AVFMT_FLAG_NONBLOCK;
+    format_ctx->max_analyze_duration = 0;
+    // The path is passed only as a format-probing hint; with AVFMT_FLAG_CUSTOM_IO set,
+    // avformat_open_input reads through pb (our fd) and never opens the URL itself.
     bundle.m_format_ctx = TRY(create_context(asset.path(), format_ctx));
 
     int stream_index;

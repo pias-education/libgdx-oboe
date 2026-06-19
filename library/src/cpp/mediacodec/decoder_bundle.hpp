@@ -4,6 +4,7 @@
 
 #include "ffmpeg_utils.hpp"
 #include "internal_asset.hpp"
+#include "file_asset.hpp"
 #include "../utility/result_utils.hpp"
 
 SIMPLE_RESULT(decoder_bundle)
@@ -11,7 +12,9 @@ SIMPLE_RESULT(decoder_bundle)
 /// Complete data set, required to make decoder work
 class decoder_bundle {
 public:
-    /// Try to create a decoder_bundle from a file
+    /// Try to create a decoder_bundle from a file path. Opens the file via a custom
+    /// AVIOContext (see @p file_asset) rather than FFmpeg's `file:` protocol, which is
+    /// not available in the bundled libavformat.
     /// @param filename Full path to the file to decode
     /// @return Result with either a @p decoder_bundle, or delegated @p decoder_bundle_error
     static decoder_bundle_result create(std::string_view filename);
@@ -20,6 +23,11 @@ public:
     /// @param asset Valid internal_asset object
     /// @return Result with either a @p decoder_bundle, or delegated @p decoder_bundle_error
     static decoder_bundle_result create(internal_asset &asset);
+
+    /// Try to create a decoder_bundle from a file_asset
+    /// @param asset Valid file_asset object
+    /// @return Result with either a @p decoder_bundle, or delegated @p decoder_bundle_error
+    static decoder_bundle_result create(file_asset &asset);
 
     format_context_ptr m_format_ctx;
     codec_context_ptr m_codec_ctx;
