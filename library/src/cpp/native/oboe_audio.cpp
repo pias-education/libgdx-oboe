@@ -124,8 +124,12 @@ OBOEAUDIO_METHOD(void, disposeEngine)(JNIEnv *env, jobject self) {
 }
 
 OBOEAUDIO_METHOD(void, resume)(JNIEnv *env, jobject self) {
-    auto* player = get_or_create_shared_player(env, self);
-    player->resume();
+    if (auto* player = get_var_as<audio_player>(
+            env, self, k_shared_player)) {
+        player->resume();
+    } else {
+        get_or_create_shared_player(env, self);
+    }
 }
 
 OBOEAUDIO_METHOD(void, pause)(JNIEnv *env, jobject self) {
