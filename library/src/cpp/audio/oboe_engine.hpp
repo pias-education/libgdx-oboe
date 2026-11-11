@@ -55,6 +55,9 @@ private:
     // oboe::AudioStreamErrorCallback interface
     void onErrorAfterClose(oboe::AudioStream *, oboe::Result);
 
+    std::atomic<uint64_t> m_callback_count{0};
+    std::atomic<uint64_t> m_audio_data_count{0};
+
 private:
     void connect_to_device();
 

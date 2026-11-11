@@ -41,12 +41,14 @@ oboe_engine::~oboe_engine() {
 void oboe_engine::connect_to_device() {
     // initialize Oboe audio stream
     oboe::AudioStreamBuilder builder;
+    // TEMPORARY: Force AAudio for audio debugging
+    builder.setAudioApi(oboe::AudioApi::AAudio);
     builder.setChannelCount(m_channels);
     builder.setSampleRate(static_cast<int32_t>(m_sample_rate));
     builder.setErrorCallback(this);
     builder.setFormat(oboe::AudioFormat::I16);
-    builder.setPerformanceMode(oboe::PerformanceMode::LowLatency);
-    builder.setSharingMode(oboe::SharingMode::Exclusive);
+    builder.setPerformanceMode(oboe::PerformanceMode::None);
+    builder.setSharingMode(oboe::SharingMode::Shared);
     builder.setFormatConversionAllowed(true);
 
     builder.setUsage(oboe::Usage::Game);
@@ -68,6 +70,19 @@ void oboe_engine::connect_to_device() {
     }
 
     check(builder.openStream(ptrptr(m_stream)), "Error opening stream: {}");
+    //TEMPORARY
+    if (m_stream) {
+        const auto performance = m_stream->getPerformanceMode();
+        info("Oboe backend: {}, sharing: {}, performance: {}",
+             m_stream->getAudioApi() == oboe::AudioApi::AAudio
+             ? "AAudio" : "OpenSLES",
+             m_stream->getSharingMode() == oboe::SharingMode::Shared
+             ? "Shared" : "Exclusive",
+             performance == oboe::PerformanceMode::LowLatency
+             ? "LowLatency" :
+             performance == oboe::PerformanceMode::None
+             ? "None" : "PowerSaving/Other");
+    }
 
     m_payload_size = m_stream->getFramesPerBurst() * 2;
     m_stream->setBufferSizeInFrames(static_cast<int32_t>(m_payload_size));
@@ -83,27 +98,43 @@ void oboe_engine::onErrorAfterClose(oboe::AudioStream *self, oboe::Result error)
     }
 }
 
-oboe::DataCallbackResult oboe_engine::onAudioReady(oboe::AudioStream *self, void *audio_data,
-                                                   int32_t num_frames) {
-    android_assert(m_mode == mode::async_writing,
-                   "engine not in async_writing mode, something went wrong.");
+oboe::DataCallbackResult oboe_engine::onAudioReady(
+        oboe::AudioStream *self,
+        void *audio_data,
+        int32_t num_frames) {
 
-    if (num_frames > 0 && m_on_async_write) {
-        auto& pcm_queue = m_on_async_write(static_cast<uint32_t>(num_frames * m_channels));
-        auto stream = static_cast<int16_t*>(audio_data);
-        int32_t write_size = std::min(static_cast<int32_t>(pcm_queue.size()), num_frames * m_channels);
+        android_assert(m_mode == mode::async_writing,
+                       "engine not in async_writing mode, something went wrong.");
 
-        if (write_size != 0) {
-            std::copy(pcm_queue.begin(),
-                      std::next(pcm_queue.begin(), write_size),
-                      stream);
-        }
+        if(num_frames <= 0)
+            return oboe::DataCallbackResult::Continue;
 
-        if (write_size < num_frames) {
-            std::fill(std::next(stream, write_size),
-                      std::next(stream, num_frames * m_channels),
-                      0);
-        }
+        auto* stream = static_cast<int16_t *>(audio_data);
+        const int32_t sample_count = num_frames * m_channels;
+
+
+        if (m_on_async_write) {
+            auto &pcm_queue = m_on_async_write(
+                    static_cast<uint32_t>(sample_count));
+
+            const int32_t write_size = std::min(
+                    static_cast<int32_t>(pcm_queue.size()),
+                    sample_count);
+
+            std::copy_n(pcm_queue.begin(), write_size, stream);
+
+            if (write_size < sample_count) {
+                std::fill_n(stream + write_size,
+                            sample_count - write_size, 0);
+                }
+             } else {
+                std::fill_n(stream, sample_count, 0);
+            }
+    m_callback_count.fetch_add(1, std::memory_order_relaxed);
+
+    if (std::any_of(stream, stream + sample_count,
+                    [](int16_t sample) { return sample != 0; })) {
+        m_audio_data_count.fetch_add(1, std::memory_order_relaxed);
     }
 
     return oboe::DataCallbackResult::Continue;
@@ -123,8 +154,10 @@ void oboe_engine::resume() {
 void oboe_engine::stop() {
     if (!m_stream)
         return;
-
-    debug("stop::resume. State: {}", oboe::convertToText(m_stream->getState()));
+    debug("Audio stats: callbacks={}, nonzero={}",
+           m_callback_count.load(std::memory_order_relaxed),
+           m_audio_data_count.load(std::memory_order_relaxed));
+    debug("oboe_engine::stop. State: {}", oboe::convertToText(m_stream->getState()));
 
     if (check(m_stream->requestStop(), "Error stopping stream: {}")) {
         m_is_playing = false;
